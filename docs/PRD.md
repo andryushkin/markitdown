@@ -129,7 +129,7 @@
 
 ---
 
-## Phase 11: Footnotes (v2.0)
+## Phase 11: Footnotes (v2.0) ✅
 
-- [ ] Markdown footnote syntax `[^1]`
-- [ ] **Tests:** `tests/footnotes.test.ts`
+- [x] Markdown footnote syntax `[^1]`
+- [x] **Tests:** `tests/footnotes.test.ts`

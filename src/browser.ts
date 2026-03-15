@@ -3,6 +3,7 @@ import { sanitize } from './core/sanitizer.js';
 import { convertChildren } from './core/parser.js';
 import { normalize } from './core/normalizer.js';
 import { normalizeFragment } from './core/fragment.js';
+import { collectFootnoteDefs, buildFootnotesSection } from './core/footnotes.js';
 
 export type { DOMAdapterFn, Rule, MarkItDownOptions } from './types.js';
 
@@ -15,9 +16,17 @@ export function toMarkdown(input: string | Node, options: MarkItDownOptions = {}
   } else {
     root = input as Element;
   }
+
+  const footnoteDefs = options.footnotes ? collectFootnoteDefs(root, options) : undefined;
+
   sanitize(root, 'full', options.math);
   const raw = convertChildren(root as Element, options);
-  return normalize(raw);
+  let result = normalize(raw);
+
+  if (footnoteDefs && footnoteDefs.size > 0) {
+    result = result.trimEnd() + '\n\n' + buildFootnotesSection(footnoteDefs);
+  }
+  return result;
 }
 
 export function selectionToMarkdown(selection: Selection, options: MarkItDownOptions = {}): string {

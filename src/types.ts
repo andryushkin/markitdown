@@ -9,6 +9,7 @@ export interface Rule {
 export interface MarkItDownOptions {
   baseUrl?: string;
   math?: boolean;
+  footnotes?: boolean;
   complexTableFallback?: 'html' | 'text' | 'skip';
   rules?: Rule[];
   domAdapter?: DOMAdapterFn;
