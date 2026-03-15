@@ -4,7 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-`@markitdown/core` — TypeScript-библиотека для конвертации HTML в Markdown. Работает в браузере (нативный DOMParser), Node.js и Bun (через pluggable DOM-адаптеры). Zero hard dependencies.
+`@markitdown/core` — опенсорсная TypeScript-библиотека для конвертации HTML в Markdown. Работает в браузере (нативный DOMParser), Node.js и Bun (через pluggable DOM-адаптеры). Zero hard dependencies.
+
+**Продуктовый контекст:** библиотека является ядром платного Chrome Extension для сохранения выделенных фрагментов страниц в Markdown. Ключевой сценарий — работа с пользовательским выделением (`selectionToMarkdown`), а не с полными страницами. Модуль Partial Selection (Модуль 2 в спеке) — приоритетный.
 
 **Единственный источник правды:** `docs/LIBRARY_SPEC.md` — полная техническая спецификация с парами HTML→Markdown, антипаттернами и граничными случаями для каждого модуля.
 
