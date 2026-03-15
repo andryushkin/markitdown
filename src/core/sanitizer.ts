@@ -13,11 +13,34 @@ const UNWRAP_IF_EMPTY = new Set(['div', 'span', 'section', 'article']);
 const PRESERVE_WS = new Set(['pre', 'code', 'textarea', 'kbd', 'samp']);
 
 export function sanitize(root: Element | Document, mode: 'full' | 'selection' = 'full'): void {
+  hoistNoscriptImageSrc(root);
   removeByTagSet(root, REMOVE_TAGS);
   if (mode === 'full') removeByTagSet(root, REMOVE_STRUCTURAL);
   removeHidden(root);
   removeEmptyWrappers(root);
   collapseWhitespace(root);
+}
+
+// Перед удалением <noscript>: если рядом с placeholder-img есть <noscript> с реальным src,
+// копируем этот src в data-noscript-src на img, чтобы extractImageUrl мог его использовать.
+// TreeWalker может не обходить <noscript> (linkedom), поэтому используем querySelectorAll.
+function hoistNoscriptImageSrc(root: Element | Document): void {
+  const noscripts = Array.from(
+    (root as Element).querySelectorAll ? (root as Element).querySelectorAll('noscript') : [],
+  );
+  for (const el of noscripts) {
+    const prev = el.previousElementSibling;
+    if (!prev || prev.tagName.toLowerCase() !== 'img') continue;
+    // DOM может парсить noscript как элементы (linkedom) или как raw-text (браузер)
+    const innerImg = el.querySelector('img');
+    if (innerImg) {
+      const src = innerImg.getAttribute('src');
+      if (src) prev.setAttribute('data-noscript-src', src);
+    } else {
+      const match = el.textContent?.match(/src=["']([^"']+)["']/);
+      if (match) prev.setAttribute('data-noscript-src', match[1]!);
+    }
+  }
 }
 
 function removeByTagSet(root: Element | Document, tags: Set<string>): void {

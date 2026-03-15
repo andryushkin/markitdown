@@ -2,6 +2,8 @@
   "name": "@markitdown/core",
   "version": "0.1.0",
   "type": "module",
+  "main": "./dist/server.cjs",
+  "types": "./dist/server.d.ts",
   "sideEffects": false,
   "exports": {
     ".": {
@@ -41,19 +43,24 @@
     "lint:fix": "eslint src tests --fix",
     "tsc": "tsc --noEmit",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "benchmark": "bun bench/index.ts",
+    "size-check": "bun run build && bun scripts/size-check.ts",
+    "publint": "bunx publint",
+    "attw": "bunx @arethetypeswrong/cli --pack ."
   },
   "devDependencies": {
-    "linkedom": "*",
-    "typescript": "^5.4.0",
-    "tsup": "^8.0.0",
-    "vitest": "^1.6.0",
-    "@vitest/coverage-v8": "^1.6.0",
-    "@vitest/browser": "^1.6.0",
-    "eslint": "^9.0.0",
+    "@types/node": "^25.5.0",
     "@typescript-eslint/eslint-plugin": "^7.0.0",
     "@typescript-eslint/parser": "^7.0.0",
-    "prettier": "^3.2.0"
+    "@vitest/browser": "^1.6.0",
+    "@vitest/coverage-v8": "^1.6.0",
+    "eslint": "^9.0.0",
+    "linkedom": "*",
+    "prettier": "^3.2.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.4.0",
+    "vitest": "^1.6.0"
   },
   "peerDependencies": {
     "linkedom": "",

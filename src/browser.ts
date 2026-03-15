@@ -2,6 +2,7 @@ import type { MarkItDownOptions } from './types.js';
 import { sanitize } from './core/sanitizer.js';
 import { convertChildren } from './core/parser.js';
 import { normalize } from './core/normalizer.js';
+import { normalizeFragment } from './core/fragment.js';
 
 export type { DOMAdapterFn, Rule, MarkItDownOptions } from './types.js';
 
@@ -19,6 +20,16 @@ export function toMarkdown(input: string | Node, options: MarkItDownOptions = {}
   return normalize(raw);
 }
 
-export function selectionToMarkdown(_selection: Selection, _options?: MarkItDownOptions): string {
-  throw new Error('selectionToMarkdown: Not implemented yet (Phase 8)');
+export function selectionToMarkdown(selection: Selection, options: MarkItDownOptions = {}): string {
+  if (!selection || selection.rangeCount === 0 || selection.toString().trim() === '') return '';
+
+  const container = document.createElement('div');
+  for (let i = 0; i < selection.rangeCount; i++) {
+    container.appendChild(selection.getRangeAt(i).cloneContents());
+  }
+
+  normalizeFragment(container);
+  sanitize(container, 'selection');
+  const raw = convertChildren(container, options);
+  return normalize(raw);
 }

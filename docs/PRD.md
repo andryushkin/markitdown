@@ -51,49 +51,49 @@
 
 ## Phase 3: Lists
 
-- [ ] Unordered lists (`<ul>/<li>` → `-`)
-- [ ] Ordered lists (`<ol>/<li>` → `1.`)
-- [ ] Nested lists (сохранение уровней отступа)
-- [ ] **Tests:** `tests/lists.test.ts`
+- [x] Unordered lists (`<ul>/<li>` → `-`)
+- [x] Ordered lists (`<ol>/<li>` → `1.`)
+- [x] Nested lists (сохранение уровней отступа)
+- [x] **Tests:** `tests/lists.test.ts`
 
 ---
 
 ## Phase 4: Inline Elements
 
-- [ ] Strong (`<strong>/<b>` → `**`)
-- [ ] Em (`<em>/<i>` → `*`)
-- [ ] Del (`<del>/<s>` → `~~`)
-- [ ] Sub (`<sub>`), Sup (`<sup>`), Mark (`<mark>`)
-- [ ] Inline code (`<code>` вне `<pre>` → `` ` ``)
-- [ ] **Tests:** `tests/inline.test.ts`
+- [x] Strong (`<strong>/<b>` → `**`)
+- [x] Em (`<em>/<i>` → `*`)
+- [x] Del (`<del>/<s>` → `~~`)
+- [x] Sub (`<sub>`), Sup (`<sup>`), Mark (`<mark>`)
+- [x] Inline code (`<code>` вне `<pre>` → `` ` ``)
+- [x] **Tests:** `tests/inline.test.ts`
 
 ---
 
 ## Phase 5: Links & Images
 
-- [ ] Links: абсолютные URL
-- [ ] Links: относительные URL (резолвинг через `options.baseUrl`)
-- [ ] Links: title атрибут
-- [ ] Links: autolinks, `mailto:`, `tel:`
-- [ ] Images: `src`, `data-src` (lazy loading), `alt`, `title`
-- [ ] **Tests:** `tests/links.test.ts`, `tests/images.test.ts`
+- [x] Links: абсолютные URL
+- [x] Links: относительные URL (резолвинг через `options.baseUrl`)
+- [x] Links: title атрибут
+- [x] Links: autolinks, `mailto:`, `tel:`
+- [x] Images: `src`, `data-src` (lazy loading), `alt`, `title`
+- [x] **Tests:** `tests/links.test.ts`, `tests/images.test.ts`
 
 ---
 
 ## Phase 6: Code Blocks
 
-- [ ] Fenced code blocks (` ``` `)
-- [ ] Language detection (`class="language-*"`, `data-lang`)
-- [ ] Сохранение whitespace внутри `<pre>/<code>`
-- [ ] **Tests:** `tests/code.test.ts`
+- [x] Fenced code blocks (` ``` `)
+- [x] Language detection (`class="language-*"`, `data-lang`)
+- [x] Сохранение whitespace внутри `<pre>/<code>`
+- [x] **Tests:** `tests/code.test.ts`
 
 ---
 
 ## Phase 7: Tables
 
-- [ ] Simple GFM pipe tables
-- [ ] Complex tables (colspan/rowspan) → fallback: `'html' | 'text' | 'skip'` (опция `complexTableFallback`)
-- [ ] **Tests:** `tests/tables.test.ts`
+- [x] Simple GFM pipe tables
+- [x] Complex tables (colspan/rowspan) → fallback: `'html' | 'text' | 'skip'` (опция `complexTableFallback`)
+- [x] **Tests:** `tests/tables.test.ts`
 
 ---
 
@@ -101,21 +101,21 @@
 
 Приоритетный модуль — ядро Chrome Extension.
 
-- [ ] `selectionToMarkdown(selection: Selection, options?: MarkItDownOptions): string`
-- [ ] Partial Selection: нормализация произвольного DOM-фрагмента (Selection → DocumentFragment)
-- [ ] Sanitizer в режиме selection (не удалять `<nav>/<aside>` — контекст может быть нужен)
-- [ ] Граничные случаи: выделение пересекает несколько блоков, частично выделенные списки/таблицы
-- [ ] **Tests:** `tests/selection.test.ts`
+- [x] `selectionToMarkdown(selection: Selection, options?: MarkItDownOptions): string`
+- [x] Partial Selection: нормализация произвольного DOM-фрагмента (Selection → DocumentFragment)
+- [x] Sanitizer в режиме selection (не удалять `<nav>/<aside>` — контекст может быть нужен)
+- [x] Граничные случаи: выделение пересекает несколько блоков, частично выделенные списки/таблицы
+- [x] **Tests:** `tests/selection.test.ts`
 
 ---
 
-## Phase 9: Build & Publish Validation
+## Phase 9: Build & Publish Validation ✅
 
-- [ ] Bundle size check (browser entry < 15 KB gzip, server entry < 20 KB gzip)
-- [ ] `npx @arethetypeswrong/cli --pack .` — корректность типов
-- [ ] `npx publint` — корректность `package.json` exports
-- [ ] Integration tests: `tests/integration/` (github, wikipedia, stackoverflow, arxiv)
-- [ ] Performance benchmark (10 KB HTML: браузер < 50 мс, Bun+linkedom < 30 мс)
+- [x] Bundle size check (browser 4.1 KB gzip ✓, server 3.9 KB gzip ✓) — `scripts/size-check.ts`
+- [x] `bun run attw` — все 4 сценария (node10, node16 CJS/ESM, bundler) 🟢
+- [x] `bun run publint` — exports корректны (suggestion: добавить `license` поле)
+- [x] Integration tests: `tests/integration/` (github, wikipedia, stackoverflow, arxiv) — 17 тестов
+- [x] Performance benchmark: ~0.7 мс / 10 KB HTML в Bun+linkedom ✓ (цель < 30 мс) — `bench/index.ts`
 
 ---
 

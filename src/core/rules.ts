@@ -1,8 +1,18 @@
 import type { Rule, MarkItDownOptions } from '../types.js';
 import { BLOCK_RULES } from '../rules/block.js';
+import { LIST_RULES } from '../rules/lists.js';
+import { TABLE_RULES } from '../rules/tables.js';
+import { CODE_RULES } from '../rules/code.js';
+import { INLINE_RULES } from '../rules/inline.js';
 
 // Стандартные правила
-export const STANDARD_RULES: Rule[] = [...BLOCK_RULES];
+export const STANDARD_RULES: Rule[] = [
+  ...BLOCK_RULES,
+  ...LIST_RULES,
+  ...TABLE_RULES,
+  ...CODE_RULES,
+  ...INLINE_RULES,
+];
 
 // 4. Keep-rules (HTML as-is) — заполнятся по необходимости
 export const KEEP_RULES: Rule[] = [];
