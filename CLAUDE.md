@@ -15,7 +15,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ```bash
 bun install                              # Install dependencies
 bun test                                 # Run all tests
-bun test src/tests/whitespace.test.ts    # Run single test file
+bun test tests/whitespace.test.ts        # Run single test file
 bun test --coverage                      # With coverage (target: >90%)
 bun run build                            # Build dist via tsup
 bun run lint                             # ESLint
@@ -51,6 +51,7 @@ Markdown string
 ### Rule System
 
 Каждый тег обрабатывается правилом в порядке приоритета:
+
 1. Пользовательские (`options.rules`) — наивысший
 2. Специальные (math, footnotes) — если опция включена
 3. Стандартные (headings, inline, lists, code, tables, images, blockquote, paragraphs)
@@ -75,29 +76,30 @@ interface Rule {
 ### Whitespace (критический фундамент)
 
 Три фазы нормализации:
+
 1. **DOM-level** (в Sanitizer): `[\t\n\v\f\r ]+` → ` `. НЕ `\s+` (сломает `&nbsp;`). Исключения: `<pre>`, `<code>`, `<textarea>`, `<kbd>`, `<samp>`
 2. **Flanking** (при конвертации inline): переносить внутренние пробелы наружу от `*`, `**`, `` ` ``
 3. **Output** (после конвертации): сжать 3+ `\n` до `\n\n`, убрать trailing whitespace
 
 ### Build Outputs (tsup)
 
-| Entry | Format | Platform |
-|-------|--------|----------|
-| `src/browser.ts` → `dist/browser.mjs` | ESM | browser |
-| `src/server.ts` → `dist/server.mjs` | ESM | node |
-| `src/server.ts` → `dist/server.cjs` | CJS | node |
+| Entry                                 | Format | Platform |
+| ------------------------------------- | ------ | -------- |
+| `src/browser.ts` → `dist/browser.mjs` | ESM    | browser  |
+| `src/server.ts` → `dist/server.mjs`   | ESM    | node     |
+| `src/server.ts` → `dist/server.cjs`   | CJS    | node     |
 
 ## Public API
 
 ```typescript
 function toMarkdown(input: string | Node, options?: MarkItDownOptions): string;
-function setDOMAdapter(adapter: DOMAdapterFn): void;         // для Node.js/Bun
+function setDOMAdapter(adapter: DOMAdapterFn): void; // для Node.js/Bun
 function selectionToMarkdown(selection: Selection, options?: MarkItDownOptions): string; // только браузер
 
 interface MarkItDownOptions {
   baseUrl?: string;
-  math?: boolean;                                            // KaTeX/MathJax (default: false)
-  complexTableFallback?: 'html' | 'text' | 'skip';          // default: 'html'
+  math?: boolean; // KaTeX/MathJax (default: false)
+  complexTableFallback?: 'html' | 'text' | 'skip'; // default: 'html'
   rules?: Rule[];
   domAdapter?: DOMAdapterFn;
 }
@@ -115,12 +117,21 @@ tests/
 
 Тест-кейсы — пары `{html input → expected markdown}`. Запускаются в двух рантаймах: Vitest (Node.js + browser mode) и `bun test`.
 
+## Known Issues / Gotchas
+
+### `Node` глобал не определён в Bun
+`Node.TEXT_NODE`, `Node.ELEMENT_NODE` и т.д. — браузерные глобалы. В Bun выбрасывают `ReferenceError`.
+**Решение:** использовать числовые константы: `TEXT_NODE = 3`, `ELEMENT_NODE = 1`, `DOCUMENT_NODE = 9`.
+
+### `linkedom` нужен и в `peerDependencies`, и в `devDependencies`
+`peerDependencies` не устанавливаются автоматически — для тестов linkedom должен быть явно в `devDependencies`.
+
 ## Performance Targets
 
-| Метрика | Цель |
-|---------|------|
-| browser entry (gzip) | < 15 KB |
-| server entry (gzip) | < 20 KB |
-| Конвертация 10 KB HTML, браузер | < 50 мс |
+| Метрика                              | Цель    |
+| ------------------------------------ | ------- |
+| browser entry (gzip)                 | < 15 KB |
+| server entry (gzip)                  | < 20 KB |
+| Конвертация 10 KB HTML, браузер      | < 50 мс |
 | Конвертация 10 KB HTML, Bun+linkedom | < 30 мс |
-| Покрытие тестами | > 90% |
+| Покрытие тестами                     | > 90%   |

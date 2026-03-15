@@ -81,7 +81,7 @@ function convert(node: Node): string {
 
 function convertChildren(el: Element): string {
   return Array.from(el.childNodes)
-    .map(child => convert(child))
+    .map((child) => convert(child))
     .join('');
 }
 ```
@@ -128,19 +128,18 @@ DON'T:  /\s+/g  → ' '      ← ломает &nbsp;
 
 ```html
 <!-- INPUT -->
-<p>
-  Привет,    мир!
-  Как   дела?
-</p>
+<p>Привет, мир! Как дела?</p>
 ```
 
 ```markdown
 <!-- ✅ DO: правильный результат -->
+
 Привет, мир! Как дела?
 
 <!-- ❌ DON'T: сохранять переносы и множественные пробелы -->
-Привет,    мир!
-  Как   дела?
+
+Привет, мир!
+Как дела?
 ```
 
 #### Пример: `<pre>` — сохранять как есть
@@ -155,15 +154,20 @@ DON'T:  /\s+/g  → ' '      ← ломает &nbsp;
 ```markdown
 <!-- ✅ DO: пробелы в pre/code сохранены дословно -->
 ```
+
 function hello() {
-    console.log("world");
+console.log("world");
 }
+
 ```
 
 <!-- ❌ DON'T: сжатие пробелов внутри pre -->
 ```
+
 function hello() { console.log("world"); }
+
 ```
+
 ```
 
 #### Пример: `<code>` inline — сохранять внутренние пробелы
@@ -175,9 +179,11 @@ function hello() { console.log("world"); }
 
 ```markdown
 <!-- ✅ DO -->
+
 Вызовите `arr.map( x => x * 2 )` для трансформации.
 
 <!-- ❌ DON'T: сжатие пробелов внутри inline code -->
+
 Вызовите `arr.map( x => x * 2 )` для трансформации.
 ```
 
@@ -193,9 +199,11 @@ function hello() { console.log("world"); }
 
 ```markdown
 <!-- ✅ DO: &nbsp; → обычный пробел в финальном markdown, НО не склеивать слова -->
+
 Цена: 100 руб.
 
 <!-- ❌ DON'T: удалять &nbsp; или склеивать -->
+
 Цена:100руб.
 ```
 
@@ -217,12 +225,15 @@ function hello() { console.log("world"); }
 
 ```markdown
 <!-- ✅ DO: пробелы вынесены за разделители -->
-Слово *выделенное* продолжение
+
+Слово _выделенное_ продолжение
 
 <!-- ❌ DON'T: пробелы внутри разделителей — ломает CommonMark парсеры -->
-Слово * выделенное * продолжение
+
+Слово _ выделенное _ продолжение
 
 <!-- ❌ DON'T: потеря пробелов — слова склеиваются -->
+
 Слово*выделенное*продолжение
 ```
 
@@ -254,18 +265,23 @@ function emReplacement(el: Element, childContent: string): string {
 
 ```html
 <!-- INPUT -->
-<p>Это <strong><em> важный текст </em></strong> конец.</p>
+<p>
+  Это <strong><em> важный текст </em></strong> конец.
+</p>
 ```
 
 ```markdown
 <!-- ✅ DO: пробелы вынесены за все разделители -->
-Это ***важный текст*** конец.
+
+Это **_важный текст_** конец.
 
 <!-- ❌ DON'T: пробелы внутри -->
-Это *** важный текст *** конец.
+
+Это **_ важный текст _** конец.
 
 <!-- ❌ DON'T: разделители врозь с пробелами между ними -->
-Это ** * важный текст * ** конец.
+
+Это ** _ важный текст _ ** конец.
 ```
 
 #### Пример: ссылка с пробелами
@@ -277,9 +293,11 @@ function emReplacement(el: Element, childContent: string): string {
 
 ```markdown
 <!-- ✅ DO -->
+
 Смотри [здесь](https://example.com) подробнее.
 
 <!-- ❌ DON'T -->
+
 Смотри [ здесь ](https://example.com) подробнее.
 ```
 
@@ -289,6 +307,7 @@ function emReplacement(el: Element, childContent: string): string {
 
 ```markdown
 <!-- ✅ DO: ровно одна пустая строка между блоками -->
+
 # Заголовок
 
 Параграф первый.
@@ -296,13 +315,10 @@ function emReplacement(el: Element, childContent: string): string {
 Параграф второй.
 
 <!-- ❌ DON'T: множественные пустые строки -->
+
 # Заголовок
 
-
-
 Параграф первый.
-
-
 
 Параграф второй.
 ```
@@ -311,12 +327,14 @@ function emReplacement(el: Element, childContent: string): string {
 
 ```markdown
 <!-- ✅ DO: нет пробелов в конце строк (кроме намеренного <br>) -->
+
 Строка текста.
 Ещё строка.
 
 <!-- ❌ DON'T: пробелы в конце строк -->
-Строка текста.   
-Ещё строка.  
+
+Строка текста.  
+Ещё строка.
 ```
 
 Исключение: `<br>` в середине блока → два пробела + `\n`.
@@ -325,14 +343,19 @@ function emReplacement(el: Element, childContent: string): string {
 
 ```markdown
 <!-- ✅ DO: файл заканчивается ровно одним \n -->
+
 Последняя строка.\n
+
 <!-- EOF -->
 
 <!-- ❌ DON'T: нет финального переноса -->
+
 Последняя строка.<!-- EOF -->
 
 <!-- ❌ DON'T: множественные финальные переносы -->
+
 Последняя строка.\n\n\n
+
 <!-- EOF -->
 ```
 
@@ -347,41 +370,45 @@ function emReplacement(el: Element, childContent: string): string {
 
 ```markdown
 <!-- ✅ DO: пустой элемент пропущен -->
+
 Слово продолжение
 
 <!-- ❌ DON'T: пустые разделители -->
-Слово** продолжение
+
+Слово\*\* продолжение
 ```
 
 #### Inline-элемент с одними пробелами
 
 ```html
 <!-- INPUT -->
-<p>Слово<strong>   </strong>продолжение</p>
+<p>Слово<strong> </strong>продолжение</p>
 ```
 
 ```markdown
 <!-- ✅ DO: только пробелы → не оборачивать, вернуть пробелы -->
-Слово   продолжение
+
+Слово продолжение
 
 <!-- ❌ DON'T -->
-Слово**   **продолжение
+
+Слово\*\* \*\*продолжение
 ```
 
 #### Переносы строк в inline-контексте
 
 ```html
 <!-- INPUT -->
-<p>Первая строка
-вторая строка
-третья строка</p>
+<p>Первая строка вторая строка третья строка</p>
 ```
 
 ```markdown
 <!-- ✅ DO: \n в обычном p → пробел (как в браузере) -->
+
 Первая строка вторая строка третья строка
 
 <!-- ❌ DON'T: сохранять переносы из исходника -->
+
 Первая строка
 вторая строка
 третья строка
@@ -391,16 +418,18 @@ function emReplacement(el: Element, childContent: string): string {
 
 ```html
 <!-- INPUT -->
-<p>Строка первая<br>Строка вторая<br>Строка третья</p>
+<p>Строка первая<br />Строка вторая<br />Строка третья</p>
 ```
 
 ```markdown
 <!-- ✅ DO: <br> → два пробела + \n (или обратный слеш + \n) -->
+
 Строка первая  
 Строка вторая  
 Строка третья
 
 <!-- ❌ DON'T: <br> → обычный перенос без маркера -->
+
 Строка первая
 Строка вторая
 Строка третья
@@ -430,7 +459,9 @@ function emReplacement(el: Element, childContent: string): string {
 
 <!-- cloneContents() вернёт: -->
 <p><strong>середина</strong> и конец.</p>
-<ul><li>Первый пункт</li></ul>
+<ul>
+  <li>Первый пункт</li>
+</ul>
 ```
 
 Это нормально. Но бывают проблемные случаи.
@@ -440,15 +471,23 @@ function emReplacement(el: Element, childContent: string): string {
 ```html
 <!-- Пользователь выделил текст внутри одной ячейки таблицы -->
 <!-- cloneContents() вернёт: -->
-<table><tbody><tr><td>выделенный текст</td></tr></tbody></table>
+<table>
+  <tbody>
+    <tr>
+      <td>выделенный текст</td>
+    </tr>
+  </tbody>
+</table>
 ```
 
 ```markdown
 <!-- ❌ DON'T: конвертировать как таблицу — бессмысленно -->
+
 | выделенный текст |
-| --- |
+| ---------------- |
 
 <!-- ✅ DO: распознать single-cell fragment, вернуть только текст -->
+
 выделенный текст
 ```
 
@@ -476,24 +515,29 @@ function unwrapSingleCellTable(fragment: DocumentFragment): void {
 
 ```html
 <!-- cloneContents() обернул в лишние контейнеры -->
-<div><section><article><p>Просто текст</p></article></section></div>
+<div>
+  <section>
+    <article><p>Просто текст</p></article>
+  </section>
+</div>
 ```
 
 ```markdown
 <!-- ✅ DO: развернуть до значимого элемента -->
+
 Просто текст
 
 <!-- ❌ DON'T: каждый уровень обёртки что-то добавляет -->
+
 Просто текст
+
 <!-- (Но с лишними пустыми строками или отступами) -->
 ```
 
 #### Правило: unwrap single-child containers
 
 ```typescript
-const UNWRAP_TAGS = new Set([
-  'div', 'section', 'article', 'main', 'span', 'figure'
-]);
+const UNWRAP_TAGS = new Set(['div', 'section', 'article', 'main', 'span', 'figure']);
 
 function unwrapSingleChildContainers(root: Element): void {
   let changed = true;
@@ -504,7 +548,7 @@ function unwrapSingleChildContainers(root: Element): void {
       for (const el of els) {
         // Только если единственный child — элемент (не текст)
         const children = Array.from(el.childNodes).filter(
-          n => n.nodeType !== Node.TEXT_NODE || n.textContent.trim()
+          (n) => n.nodeType !== Node.TEXT_NODE || n.textContent.trim(),
         );
         if (children.length === 1 && children[0].nodeType === Node.ELEMENT_NODE) {
           el.replaceWith(children[0]);
@@ -527,10 +571,10 @@ function unwrapSingleChildContainers(root: Element): void {
 
 ```markdown
 <!-- ✅ DO: пустые элементы удалены -->
+
 Реальный текст
 
 <!-- ❌ DON'T: пустые строки от пустых элементов -->
-
 
 Реальный текст
 ```
@@ -555,9 +599,11 @@ function unwrapSingleChildContainers(root: Element): void {
 
 ```markdown
 <!-- ✅ DO: вернуть как есть — это выбор пользователя -->
+
 dle of a para
 
 <!-- ❌ DON'T: пытаться «достроить» слова или добавить "..." -->
+
 ...dle of a para...
 ```
 
@@ -577,12 +623,10 @@ function normalizeFragment(fragment: DocumentFragment): DocumentFragment {
   unwrapSingleCellTables(root);
 
   // 4. Удалить клонированные id
-  root.querySelectorAll('[id]').forEach(el => el.removeAttribute('id'));
+  root.querySelectorAll('[id]').forEach((el) => el.removeAttribute('id'));
 
   // 5. Удалить клонированные aria-hidden (они не нужны для конвертации)
-  root.querySelectorAll('[aria-hidden]').forEach(el =>
-    el.removeAttribute('aria-hidden')
-  );
+  root.querySelectorAll('[aria-hidden]').forEach((el) => el.removeAttribute('aria-hidden'));
 
   return root;
 }
@@ -619,11 +663,11 @@ function getSelectionHTML(): string | null {
 
 ### 4.1. Уровни сложности таблиц
 
-| Уровень | Признаки | Стратегия |
-|---------|----------|-----------|
-| Simple | Нет colspan/rowspan, нет блочного контента в ячейках, есть `<thead>` | GFM pipe-таблица |
-| Medium | Нет `<thead>`, или есть `<br>` в ячейках | GFM с синтетическим заголовком |
-| Complex | colspan, rowspan, вложенные таблицы, блочный контент | HTML fallback |
+| Уровень | Признаки                                                             | Стратегия                      |
+| ------- | -------------------------------------------------------------------- | ------------------------------ |
+| Simple  | Нет colspan/rowspan, нет блочного контента в ячейках, есть `<thead>` | GFM pipe-таблица               |
+| Medium  | Нет `<thead>`, или есть `<br>` в ячейках                             | GFM с синтетическим заголовком |
+| Complex | colspan, rowspan, вложенные таблицы, блочный контент                 | HTML fallback                  |
 
 ### 4.2. Simple table
 
@@ -631,29 +675,41 @@ function getSelectionHTML(): string | null {
 <!-- INPUT -->
 <table>
   <thead>
-    <tr><th>Имя</th><th>Возраст</th></tr>
+    <tr>
+      <th>Имя</th>
+      <th>Возраст</th>
+    </tr>
   </thead>
   <tbody>
-    <tr><td>Алиса</td><td>30</td></tr>
-    <tr><td>Боб</td><td>25</td></tr>
+    <tr>
+      <td>Алиса</td>
+      <td>30</td>
+    </tr>
+    <tr>
+      <td>Боб</td>
+      <td>25</td>
+    </tr>
   </tbody>
 </table>
 ```
 
 ```markdown
 <!-- ✅ DO -->
-| Имя | Возраст |
-| --- | --- |
-| Алиса | 30 |
-| Боб | 25 |
+
+| Имя   | Возраст |
+| ----- | ------- |
+| Алиса | 30      |
+| Боб   | 25      |
 
 <!-- ❌ DON'T: нет строки-разделителя -->
+
 | Имя | Возраст |
 | Алиса | 30 |
 | Боб | 25 |
 
 <!-- ❌ DON'T: лишние пробелы ломают парсер -->
-|  Имя  |  Возраст  |
+
+| Имя | Возраст |
 ```
 
 ### 4.3. Table без `<thead>` — синтетический заголовок
@@ -661,24 +717,33 @@ function getSelectionHTML(): string | null {
 ```html
 <!-- INPUT: нет thead, только tbody/tr -->
 <table>
-  <tr><td>Алиса</td><td>30</td></tr>
-  <tr><td>Боб</td><td>25</td></tr>
+  <tr>
+    <td>Алиса</td>
+    <td>30</td>
+  </tr>
+  <tr>
+    <td>Боб</td>
+    <td>25</td>
+  </tr>
 </table>
 ```
 
 ```markdown
 <!-- ✅ DO: первая строка становится заголовком -->
-| Алиса | 30 |
-| --- | --- |
-| Боб | 25 |
+
+| Алиса | 30  |
+| ----- | --- |
+| Боб   | 25  |
 
 <!-- ✅ ТАКЖЕ ДОПУСТИМО: пустой заголовок (опция) -->
-|  |  |
-| --- | --- |
-| Алиса | 30 |
-| Боб | 25 |
+
+|       |     |
+| ----- | --- |
+| Алиса | 30  |
+| Боб   | 25  |
 
 <!-- ❌ DON'T: таблица без строки-разделителя -->
+
 | Алиса | 30 |
 | Боб | 25 |
 ```
@@ -696,21 +761,27 @@ function getSelectionHTML(): string | null {
     </tr>
   </thead>
   <tbody>
-    <tr><td>Алиса</td><td>Активен</td><td>100</td></tr>
+    <tr>
+      <td>Алиса</td>
+      <td>Активен</td>
+      <td>100</td>
+    </tr>
   </tbody>
 </table>
 ```
 
 ```markdown
 <!-- ✅ DO: выравнивание через двоеточия в разделителе -->
-| Имя | Статус | Сумма |
-| :--- | :---: | ---: |
-| Алиса | Активен | 100 |
+
+| Имя   | Статус  | Сумма |
+| :---- | :-----: | ----: |
+| Алиса | Активен |   100 |
 
 <!-- ❌ DON'T: игнорировать выравнивание -->
-| Имя | Статус | Сумма |
-| --- | --- | --- |
-| Алиса | Активен | 100 |
+
+| Имя   | Статус  | Сумма |
+| ----- | ------- | ----- |
+| Алиса | Активен | 100   |
 ```
 
 ### 4.5. Table с pipe в содержимом
@@ -718,23 +789,33 @@ function getSelectionHTML(): string | null {
 ```html
 <!-- INPUT -->
 <table>
-  <thead><tr><th>Команда</th><th>Описание</th></tr></thead>
+  <thead>
+    <tr>
+      <th>Команда</th>
+      <th>Описание</th>
+    </tr>
+  </thead>
   <tbody>
-    <tr><td>a | b</td><td>Выбор: a или b</td></tr>
+    <tr>
+      <td>a | b</td>
+      <td>Выбор: a или b</td>
+    </tr>
   </tbody>
 </table>
 ```
 
 ```markdown
 <!-- ✅ DO: экранировать pipe внутри ячеек -->
-| Команда | Описание |
-| --- | --- |
-| a \| b | Выбор: a или b |
+
+| Команда | Описание       |
+| ------- | -------------- |
+| a \| b  | Выбор: a или b |
 
 <!-- ❌ DON'T: неэкранированный pipe ломает структуру таблицы -->
+
 | Команда | Описание |
-| --- | --- |
-| a | b | Выбор: a или b |
+| ------- | -------- | -------------- |
+| a       | b        | Выбор: a или b |
 ```
 
 ### 4.6. Complex table → HTML fallback
@@ -742,8 +823,13 @@ function getSelectionHTML(): string | null {
 ```html
 <!-- INPUT: colspan -->
 <table>
-  <tr><th colspan="2">Заголовок на 2 колонки</th></tr>
-  <tr><td>A</td><td>B</td></tr>
+  <tr>
+    <th colspan="2">Заголовок на 2 колонки</th>
+  </tr>
+  <tr>
+    <td>A</td>
+    <td>B</td>
+  </tr>
 </table>
 ```
 
@@ -755,14 +841,16 @@ function getSelectionHTML(): string | null {
 </table>
 
 <!-- ❌ DON'T: пытаться конвертировать с потерей colspan -->
-| Заголовок на 2 колонки |  |
-| --- | --- |
-| A | B |
+
+| Заголовок на 2 колонки |     |
+| ---------------------- | --- |
+| A                      | B   |
 
 <!-- ❌ DON'T: дублировать ячейку для заполнения colspan -->
+
 | Заголовок на 2 колонки | Заголовок на 2 колонки |
-| --- | --- |
-| A | B |
+| ---------------------- | ---------------------- |
+| A                      | B                      |
 ```
 
 ### 4.7. Определение сложности таблицы
@@ -780,7 +868,7 @@ function analyzeTable(table: Element): TableAnalysis {
   const hasRowspan = !!table.querySelector('[rowspan]');
   const hasNestedTable = !!table.querySelector('table table');
   const hasBlockContent = !!table.querySelector(
-    'td > ul, td > ol, td > pre, td > blockquote, td > h1, td > h2, td > h3, td > h4, td > h5, td > h6, td > table'
+    'td > ul, td > ol, td > pre, td > blockquote, td > h1, td > h2, td > h3, td > h4, td > h5, td > h6, td > table',
   );
   const hasHead = !!table.querySelector('thead');
   const firstRow = table.querySelector('tr');
@@ -804,7 +892,14 @@ function analyzeTable(table: Element): TableAnalysis {
 ```html
 <!-- Пользователь выделил 2 ячейки из строки -->
 <!-- cloneContents() вернёт: -->
-<table><tbody><tr><td>Ячейка 1</td><td>Ячейка 2</td></tr></tbody></table>
+<table>
+  <tbody>
+    <tr>
+      <td>Ячейка 1</td>
+      <td>Ячейка 2</td>
+    </tr>
+  </tbody>
+</table>
 ```
 
 ```markdown
@@ -812,16 +907,19 @@ function analyzeTable(table: Element): TableAnalysis {
      или как минимальную таблицу с пустым заголовком -->
 
 <!-- Вариант A (предпочтительный для 1 строки): -->
+
 Ячейка 1 | Ячейка 2
 
 <!-- Вариант B: -->
-|  |  |
-| --- | --- |
+
+|          |          |
+| -------- | -------- |
 | Ячейка 1 | Ячейка 2 |
 
 <!-- ❌ DON'T: бессмысленная таблица из одной строки с заголовком из данных -->
+
 | Ячейка 1 | Ячейка 2 |
-| --- | --- |
+| -------- | -------- |
 ```
 
 ### 4.9. Таблица с `<br>` в ячейках
@@ -829,22 +927,31 @@ function analyzeTable(table: Element): TableAnalysis {
 ```html
 <!-- INPUT -->
 <table>
-  <thead><tr><th>Колонка</th></tr></thead>
+  <thead>
+    <tr>
+      <th>Колонка</th>
+    </tr>
+  </thead>
   <tbody>
-    <tr><td>Строка 1<br>Строка 2<br>Строка 3</td></tr>
+    <tr>
+      <td>Строка 1<br />Строка 2<br />Строка 3</td>
+    </tr>
   </tbody>
 </table>
 ```
 
 ```markdown
 <!-- ✅ DO: <br> → <br> в ячейке (GFM поддерживает HTML внутри ячеек) -->
-| Колонка |
-| --- |
+
+| Колонка                          |
+| -------------------------------- |
 | Строка 1<br>Строка 2<br>Строка 3 |
 
 <!-- ❌ DON'T: перенос строки ломает таблицу -->
+
 | Колонка |
-| --- |
+| ------- |
+
 | Строка 1
 Строка 2
 Строка 3 |
@@ -860,17 +967,20 @@ function analyzeTable(table: Element): TableAnalysis {
 
 ```html
 <!-- INPUT -->
-<img src="photo.jpg" alt="Закат над морем" title="Фото заката">
+<img src="photo.jpg" alt="Закат над морем" title="Фото заката" />
 ```
 
 ```markdown
 <!-- ✅ DO -->
-![Закат над морем](photo.jpg "Фото заката")
+
+![Закат над морем](photo.jpg 'Фото заката')
 
 <!-- ❌ DON'T: потеря alt текста -->
+
 ![](photo.jpg)
 
 <!-- ❌ DON'T: потеря title -->
+
 ![Закат над морем](photo.jpg)
 ```
 
@@ -878,14 +988,16 @@ function analyzeTable(table: Element): TableAnalysis {
 
 ```html
 <!-- INPUT -->
-<img src="icon.png">
+<img src="icon.png" />
 ```
 
 ```markdown
 <!-- ✅ DO: пустой alt, но синтаксис корректный -->
+
 ![](icon.png)
 
 <!-- ❌ DON'T: голая ссылка без markdown-синтаксиса -->
+
 icon.png
 ```
 
@@ -897,14 +1009,16 @@ icon.png
   src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
   data-src="https://cdn.example.com/real-image.jpg"
   alt="Реальная картинка"
->
+/>
 ```
 
 ```markdown
 <!-- ✅ DO: взять URL из data-src (src — placeholder) -->
+
 ![Реальная картинка](https://cdn.example.com/real-image.jpg)
 
 <!-- ❌ DON'T: использовать placeholder base64 -->
+
 ![Реальная картинка](data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7)
 ```
 
@@ -947,7 +1061,7 @@ function isPlaceholder(src: string): boolean {
   return (
     src.startsWith('data:image/') ||
     /placeholder|spacer|1x1|blank|loading/i.test(src) ||
-    src.length < 50 && src.startsWith('data:')
+    (src.length < 50 && src.startsWith('data:'))
   );
 }
 ```
@@ -957,17 +1071,19 @@ function isPlaceholder(src: string): boolean {
 ```html
 <!-- INPUT -->
 <picture>
-  <source srcset="photo.webp" type="image/webp">
-  <source srcset="photo.jpg" type="image/jpeg">
-  <img src="photo.jpg" alt="Фото">
+  <source srcset="photo.webp" type="image/webp" />
+  <source srcset="photo.jpg" type="image/jpeg" />
+  <img src="photo.jpg" alt="Фото" />
 </picture>
 ```
 
 ```markdown
 <!-- ✅ DO: использовать src из <img> (универсальный формат) -->
+
 ![Фото](photo.jpg)
 
 <!-- ❌ DON'T: использовать webp (не все MD-рендереры поддерживают) -->
+
 ![Фото](photo.webp)
 ```
 
@@ -975,14 +1091,16 @@ function isPlaceholder(src: string): boolean {
 
 ```html
 <!-- INPUT: baseUrl = "https://example.com/blog/post.html" -->
-<img src="../images/photo.jpg" alt="Фото">
+<img src="../images/photo.jpg" alt="Фото" />
 ```
 
 ```markdown
 <!-- ✅ DO: резолвить относительный путь -->
+
 ![Фото](https://example.com/images/photo.jpg)
 
 <!-- ❌ DON'T: оставлять относительный путь (markdown-файл не знает контекст) -->
+
 ![Фото](../images/photo.jpg)
 ```
 
@@ -994,18 +1112,21 @@ function isPlaceholder(src: string): boolean {
 ```html
 <!-- INPUT -->
 <a href="https://example.com">
-  <img src="logo.png" alt="Logo">
+  <img src="logo.png" alt="Logo" />
 </a>
 ```
 
 ```markdown
 <!-- ✅ DO: вложенный синтаксис -->
+
 [![Logo](logo.png)](https://example.com)
 
 <!-- ❌ DON'T: потеря ссылки -->
+
 ![Logo](logo.png)
 
 <!-- ❌ DON'T: потеря изображения -->
+
 [Logo](https://example.com)
 ```
 
@@ -1025,12 +1146,14 @@ console.log(x);</code></pre>
 
 ````markdown
 <!-- ✅ DO: fenced code block -->
+
 ```
 const x = 42;
 console.log(x);
 ```
 
 <!-- ❌ DON'T: indented code block (менее надёжен для парсеров) -->
+
     const x = 42;
     console.log(x);
 ````
@@ -1052,6 +1175,7 @@ console.log(x);
 
 ````markdown
 <!-- ✅ DO: извлечь язык из class и передать в fence -->
+
 ```typescript
 const x: number = 42;
 ```
@@ -1065,6 +1189,7 @@ fn main() { }
 ```
 
 <!-- ❌ DON'T: потерять указание языка -->
+
 ```
 const x: number = 42;
 ```
@@ -1074,27 +1199,24 @@ const x: number = 42;
 
 ```typescript
 const LANG_PATTERNS: Array<{ regex: RegExp; group: number }> = [
-  { regex: /\blanguage-(\w+)\b/, group: 1 },      // Prism.js, стандартный HTML5
-  { regex: /\blang-(\w+)\b/, group: 1 },            // Stack Overflow, highlight.js
-  { regex: /\bhighlight-source-(\w+)\b/, group: 1 },// GitHub
-  { regex: /\bbrush:\s*(\w+)\b/, group: 1 },        // SyntaxHighlighter
-  { regex: /\bsourceCode\s+(\w+)\b/, group: 1 },    // Pandoc
-  { regex: /\bshj-lang-(\w+)\b/, group: 1 },        // Speed Highlight JS
+  { regex: /\blanguage-(\w+)\b/, group: 1 }, // Prism.js, стандартный HTML5
+  { regex: /\blang-(\w+)\b/, group: 1 }, // Stack Overflow, highlight.js
+  { regex: /\bhighlight-source-(\w+)\b/, group: 1 }, // GitHub
+  { regex: /\bbrush:\s*(\w+)\b/, group: 1 }, // SyntaxHighlighter
+  { regex: /\bsourceCode\s+(\w+)\b/, group: 1 }, // Pandoc
+  { regex: /\bshj-lang-(\w+)\b/, group: 1 }, // Speed Highlight JS
   { regex: /\bprettyprint\s+lang-(\w+)\b/, group: 1 }, // Google Code Prettify
 ];
 
 function detectLanguage(codeEl: Element): string | null {
   // Проверить <code>, потом <pre>, потом ближайший .highlight
-  const targets = [
-    codeEl,
-    codeEl.parentElement,
-    codeEl.closest('[class*="highlight"]'),
-  ].filter(Boolean) as Element[];
+  const targets = [codeEl, codeEl.parentElement, codeEl.closest('[class*="highlight"]')].filter(
+    Boolean,
+  ) as Element[];
 
   for (const target of targets) {
     // data-атрибуты приоритетнее
-    const dataLang = target.getAttribute('data-lang') ||
-                     target.getAttribute('data-language');
+    const dataLang = target.getAttribute('data-lang') || target.getAttribute('data-language');
     if (dataLang) return dataLang.toLowerCase();
 
     const className = target.className;
@@ -1118,16 +1240,17 @@ const b = 2;</code><span class="line-numbers-rows"><span></span><span></span></s
 
 ````markdown
 <!-- ✅ DO: line-numbers-rows удалены, только код -->
+
 ```js
 const a = 1;
 const b = 2;
 ```
 
 <!-- ❌ DON'T: мусор от line numbers попадает в вывод -->
+
 ```js
 const a = 1;
 const b = 2;
-
 ```
 ````
 
@@ -1144,6 +1267,7 @@ const b = 2;
 
 ```markdown
 <!-- ✅ DO -->
+
 Используйте `Array.from()` для преобразования.
 ```
 
@@ -1156,23 +1280,26 @@ const b = 2;
 
 ```markdown
 <!-- ✅ DO: двойные обратные кавычки для экранирования -->
-Шаблон: `` const tpl = `hello ${name}`; ``
+
+Шаблон: ``const tpl = `hello ${name}`;``
 
 <!-- ❌ DON'T: одинарные кавычки ломают разметку -->
+
 Шаблон: `const tpl = `hello ${name}`;`
 ```
 
 ### 6.7. Блок кода содержит тройные кавычки
 
-```html
+````html
 <!-- INPUT -->
 <pre><code>```
 nested fence
 ```</code></pre>
-```
+````
 
 `````markdown
 <!-- ✅ DO: использовать 4+ кавычки для внешнего забора -->
+
 ````
 ```
 nested fence
@@ -1180,10 +1307,15 @@ nested fence
 ````
 
 <!-- ❌ DON'T: тройные кавычки ломаются -->
+
 ```
+
 ```
+
 nested fence
+
 ```
+
 ```
 `````
 
@@ -1218,10 +1350,12 @@ if (clipboardCopy) return clipboardCopy.getAttribute('value');
 <!-- INPUT: KaTeX inline -->
 <span class="katex">
   <span class="katex-mathml">
-    <math><semantics>
-      <mrow>...</mrow>
-      <annotation encoding="application/x-tex">E = mc^2</annotation>
-    </semantics></math>
+    <math
+      ><semantics>
+        <mrow>...</mrow>
+        <annotation encoding="application/x-tex">E = mc^2</annotation>
+      </semantics></math
+    >
   </span>
   <span class="katex-html" aria-hidden="true">...</span>
 </span>
@@ -1229,9 +1363,11 @@ if (clipboardCopy) return clipboardCopy.getAttribute('value');
 
 ```markdown
 <!-- ✅ DO: извлечь LaTeX из <annotation> -->
+
 $E = mc^2$
 
 <!-- ❌ DON'T: пытаться парсить визуальное представление katex-html -->
+
 Emc2
 ```
 
@@ -1242,10 +1378,12 @@ Emc2
 <span class="katex-display">
   <span class="katex">
     <span class="katex-mathml">
-      <math><semantics>
-        <mrow>...</mrow>
-        <annotation encoding="application/x-tex">\int_0^\infty e^{-x} dx = 1</annotation>
-      </semantics></math>
+      <math
+        ><semantics>
+          <mrow>...</mrow>
+          <annotation encoding="application/x-tex">\int_0^\infty e^{-x} dx = 1</annotation>
+        </semantics></math
+      >
     </span>
     <span class="katex-html" aria-hidden="true">...</span>
   </span>
@@ -1254,9 +1392,11 @@ Emc2
 
 ```markdown
 <!-- ✅ DO: display math → $$ -->
+
 $$\int_0^\infty e^{-x} dx = 1$$
 
 <!-- ❌ DON'T: inline math для display формулы -->
+
 $\int_0^\infty e^{-x} dx = 1$
 ```
 
@@ -1269,16 +1409,19 @@ $\int_0^\infty e^{-x} dx = 1$
   <mjx-math>...</mjx-math>
   <!-- assistive MathML (наш источник) -->
   <mjx-assistive-mml>
-    <math><semantics>
-      <mrow>...</mrow>
-      <annotation encoding="application/x-tex">\sum_{i=1}^n i = \frac{n(n+1)}{2}</annotation>
-    </semantics></math>
+    <math
+      ><semantics>
+        <mrow>...</mrow>
+        <annotation encoding="application/x-tex">\sum_{i=1}^n i = \frac{n(n+1)}{2}</annotation>
+      </semantics></math
+    >
   </mjx-assistive-mml>
 </mjx-container>
 ```
 
 ```markdown
 <!-- ✅ DO -->
+
 $$\sum_{i=1}^n i = \frac{n(n+1)}{2}$$
 ```
 
@@ -1286,12 +1429,17 @@ $$\sum_{i=1}^n i = \frac{n(n+1)}{2}$$
 
 ```html
 <!-- INPUT: MathJax v2 -->
-<script type="math/tex">E = mc^2</script>
-<script type="math/tex; mode=display">\int_0^1 f(x) dx</script>
+<script type="math/tex">
+  E = mc^2
+</script>
+<script type="math/tex; mode=display">
+  \int_0^1 f(x) dx
+</script>
 ```
 
 ```markdown
 <!-- ✅ DO -->
+
 $E = mc^2$
 
 $$\int_0^1 f(x) dx$$
@@ -1311,6 +1459,7 @@ $$\int_0^1 f(x) dx$$
 
 ```markdown
 <!-- ✅ DO -->
+
 $E=mc^{2}$
 ```
 
@@ -1319,9 +1468,7 @@ $E=mc^{2}$
 ```typescript
 function extractMath(el: Element): { latex: string; display: boolean } | null {
   // 1. Универсальный: <annotation encoding="application/x-tex">
-  const annotation = el.querySelector(
-    'annotation[encoding="application/x-tex"]'
-  );
+  const annotation = el.querySelector('annotation[encoding="application/x-tex"]');
   if (annotation?.textContent) {
     const display =
       !!el.closest('.katex-display') ||
@@ -1362,11 +1509,15 @@ function extractMath(el: Element): { latex: string; display: boolean } | null {
 ```markdown
 <!-- ✅ DO: вернуть как HTML или как alt-text -->
 <!-- Если есть alt на img-fallback: -->
+
 ![E=mc²](math_equation.svg)
+
 <!-- Или оставить HTML: -->
+
 <span class="math">E=mc²</span>
 
 <!-- ❌ DON'T: пытаться угадать LaTeX из визуального рендера -->
+
 $Emc2$
 ```
 
@@ -1385,6 +1536,7 @@ $Emc2$
 
 ```markdown
 <!-- ✅ DO: ATX-style -->
+
 # Заголовок первого уровня
 
 ## Заголовок второго уровня
@@ -1392,11 +1544,10 @@ $Emc2$
 ###### Заголовок шестого уровня
 
 <!-- ❌ DON'T: Setext-style (только h1/h2, менее читаемо) -->
-Заголовок первого уровня
-=========================
 
-Заголовок второго уровня
--------------------------
+# Заголовок первого уровня
+
+## Заголовок второго уровня
 ```
 
 ### 8.2. Заголовок с inline-форматированием
@@ -1408,7 +1559,8 @@ $Emc2$
 
 ```markdown
 <!-- ✅ DO -->
-## Заголовок с `кодом` и *курсивом*
+
+## Заголовок с `кодом` и _курсивом_
 ```
 
 ### 8.3. Заголовок с якорной ссылкой (GitHub-style)
@@ -1423,9 +1575,11 @@ $Emc2$
 
 ```markdown
 <!-- ✅ DO: убрать anchor-ссылку, оставить текст -->
+
 ## Название секции
 
 <!-- ❌ DON'T: anchor попадает в текст -->
+
 ## [#](#section) Название секции
 ```
 
@@ -1442,6 +1596,7 @@ $Emc2$
 <!-- (ничего) -->
 
 <!-- ❌ DON'T -->
+
 ###
 ```
 
@@ -1457,6 +1612,7 @@ $Emc2$
 
 ```markdown
 <!-- ✅ DO: оба тега → ** -->
+
 Это **жирный** и **тоже жирный** текст.
 ```
 
@@ -1468,21 +1624,29 @@ $Emc2$
 
 ```markdown
 <!-- ✅ DO -->
-Это *курсив* и *тоже курсив*.
+
+Это _курсив_ и _тоже курсив_.
 ```
 
 ### 9.3. Bold + Italic
 
 ```html
-<p>Это <strong><em>жирный курсив</em></strong>.</p>
-<p>Это <em><strong>тоже</strong></em>.</p>
+<p>
+  Это <strong><em>жирный курсив</em></strong
+  >.
+</p>
+<p>
+  Это <em><strong>тоже</strong></em
+  >.
+</p>
 ```
 
 ```markdown
 <!-- ✅ DO: три звёздочки -->
-Это ***жирный курсив***.
 
-Это ***тоже***.
+Это **_жирный курсив_**.
+
+Это **_тоже_**.
 ```
 
 ### 9.4. Strikethrough
@@ -1493,6 +1657,7 @@ $Emc2$
 
 ```markdown
 <!-- ✅ DO: GFM strikethrough -->
+
 Это ~~зачёркнуто~~ и ~~тоже~~.
 ```
 
@@ -1504,24 +1669,33 @@ $Emc2$
 
 ```markdown
 <!-- ✅ DO: HTML passthrough (нет стандартного MD-синтаксиса) -->
+
 H<sub>2</sub>O и E=mc<sup>2</sup>
 
 <!-- ❌ DON'T: терять форматирование -->
+
 H2O и E=mc2
 ```
 
 ### 9.6. Вложенные inline-элементы
 
 ```html
-<p>Это <strong>жирный <em>и курсив <code>и код</code></em></strong>.</p>
+<p>
+  Это
+  <strong
+    >жирный <em>и курсив <code>и код</code></em></strong
+  >.
+</p>
 ```
 
 ```markdown
 <!-- ✅ DO -->
-Это ***жирный и курсив `и код`***.
+
+Это **_жирный и курсив `и код`_**.
 
 <!-- ❌ DON'T: ломать порядок закрытия -->
-Это **жирный *и курсив `и код`***.
+
+Это **жирный _и курсив `и код`_**.
 ```
 
 ### 9.7. Экранирование спецсимволов Markdown
@@ -1532,10 +1706,12 @@ H2O и E=mc2
 
 ```markdown
 <!-- ✅ DO: экранировать * если она не часть форматирования -->
+
 Цена: 3 \* 4 = 12. Скидка 10%.
 
 <!-- ❌ DON'T: неэкранированный * может создать курсив -->
-Цена: 3 * 4 = 12. Скидка 10%.
+
+Цена: 3 \* 4 = 12. Скидка 10%.
 ```
 
 Символы для экранирования: `\`, `` ` ``, `*`, `_`, `{`, `}`, `[`, `]`, `(`, `)`, `#`, `+`, `-`, `.`, `!`, `|`
@@ -1560,11 +1736,13 @@ H2O и E=mc2
 
 ```markdown
 <!-- ✅ DO -->
+
 - Пункт 1
 - Пункт 2
 - Пункт 3
 
 <!-- ❌ DON'T: лишняя пустая строка между пунктами (если в HTML её нет) -->
+
 - Пункт 1
 
 - Пункт 2
@@ -1584,11 +1762,13 @@ H2O и E=mc2
 
 ```markdown
 <!-- ✅ DO -->
+
 1. Первый
 2. Второй
 3. Третий
 
 <!-- ❌ DON'T: все единицы (хотя CommonMark это допускает, нумерация читаемее) -->
+
 1. Первый
 1. Второй
 1. Третий
@@ -1605,10 +1785,12 @@ H2O и E=mc2
 
 ```markdown
 <!-- ✅ DO: сохранить начальный номер -->
+
 5. Пятый
 6. Шестой
 
 <!-- ❌ DON'T -->
+
 1. Пятый
 2. Шестой
 ```
@@ -1617,9 +1799,11 @@ H2O и E=mc2
 
 ```html
 <ul>
-  <li>Уровень 1
+  <li>
+    Уровень 1
     <ul>
-      <li>Уровень 2
+      <li>
+        Уровень 2
         <ul>
           <li>Уровень 3</li>
         </ul>
@@ -1631,16 +1815,19 @@ H2O и E=mc2
 
 ```markdown
 <!-- ✅ DO: 2 пробела для каждого уровня вложенности (или 4) — ГЛАВНОЕ КОНСИСТЕНТНО -->
+
 - Уровень 1
   - Уровень 2
     - Уровень 3
 
 <!-- ❌ DON'T: табы (ненадёжно между парсерами) -->
+
 - Уровень 1
-	- Уровень 2
-		- Уровень 3
+  - Уровень 2
+    - Уровень 3
 
 <!-- ❌ DON'T: нет отступа — парсер не поймёт вложенность -->
+
 - Уровень 1
 - Уровень 2
 - Уровень 3
@@ -1664,6 +1851,7 @@ H2O и E=mc2
 
 ```markdown
 <!-- ✅ DO: "loose" list (пустые строки между пунктами) -->
+
 - Первый параграф пункта.
 
   Второй параграф пункта.
@@ -1675,17 +1863,19 @@ H2O и E=mc2
 
 ```html
 <ul>
-  <li><input type="checkbox" checked disabled> Сделано</li>
-  <li><input type="checkbox" disabled> Не сделано</li>
+  <li><input type="checkbox" checked disabled /> Сделано</li>
+  <li><input type="checkbox" disabled /> Не сделано</li>
 </ul>
 ```
 
 ```markdown
 <!-- ✅ DO: GFM task list -->
+
 - [x] Сделано
 - [ ] Не сделано
 
 <!-- ❌ DON'T: терять состояние чекбокса -->
+
 - Сделано
 - Не сделано
 ```
@@ -1694,7 +1884,8 @@ H2O и E=mc2
 
 ```html
 <ul>
-  <li>Установите:
+  <li>
+    Установите:
     <pre><code>npm install markitdown</code></pre>
   </li>
 </ul>
@@ -1702,6 +1893,7 @@ H2O и E=mc2
 
 ````markdown
 <!-- ✅ DO: блок кода с отступом для списка -->
+
 - Установите:
 
   ```
@@ -1709,6 +1901,7 @@ H2O и E=mc2
   ```
 
 <!-- ❌ DON'T: код без отступа выпадает из списка -->
+
 - Установите:
 
 ```
@@ -1730,9 +1923,11 @@ npm install markitdown
 
 ```markdown
 <!-- ✅ DO -->
+
 > Быть или не быть — вот в чём вопрос.
 
 <!-- ❌ DON'T: нет маркера цитаты -->
+
 Быть или не быть — вот в чём вопрос.
 ```
 
@@ -1747,11 +1942,13 @@ npm install markitdown
 
 ```markdown
 <!-- ✅ DO: > перед каждым параграфом и пустой строкой -->
+
 > Первый параграф цитаты.
 >
 > Второй параграф цитаты.
 
 <!-- ❌ DON'T: > только на первой строке -->
+
 > Первый параграф цитаты.
 
 Второй параграф цитаты.
@@ -1770,6 +1967,7 @@ npm install markitdown
 
 ```markdown
 <!-- ✅ DO -->
+
 > Внешняя цитата
 >
 > > Внутренняя цитата
@@ -1789,7 +1987,8 @@ npm install markitdown
 
 ```markdown
 <!-- ✅ DO -->
-> **Важно:** это *критический* момент.
+
+> **Важно:** это _критический_ момент.
 >
 > - Пункт 1
 > - Пункт 2
@@ -1808,11 +2007,13 @@ npm install markitdown
 
 ```markdown
 <!-- ✅ DO: разделение пустой строкой -->
+
 Первый параграф.
 
 Второй параграф.
 
 <!-- ❌ DON'T: нет пустой строки — склеятся в один параграф -->
+
 Первый параграф.
 Второй параграф.
 ```
@@ -1820,19 +2021,22 @@ npm install markitdown
 ### 12.2. `<br>` внутри параграфа
 
 ```html
-<p>Строка 1<br>Строка 2</p>
+<p>Строка 1<br />Строка 2</p>
 ```
 
 ```markdown
 <!-- ✅ DO: два пробела + newline -->
+
 Строка 1  
 Строка 2
 
 <!-- ✅ ТАКЖЕ ДОПУСТИМО: backslash newline -->
+
 Строка 1\
 Строка 2
 
 <!-- ❌ DON'T: простой перенос — CommonMark объединит в одну строку -->
+
 Строка 1
 Строка 2
 ```
@@ -1840,18 +2044,17 @@ npm install markitdown
 ### 12.3. `<hr>` — горизонтальная линия
 
 ```html
-<hr>
+<hr />
 ```
 
 ```markdown
-<!-- ✅ DO -->
----
+## <!-- ✅ DO -->
 
 <!-- ✅ ТАКЖЕ ДОПУСТИМО -->
-***
 
-<!-- ❌ DON'T: слишком короткая -->
---
+---
+
+## <!-- ❌ DON'T: слишком короткая -->
 ```
 
 ### 12.4. `<div>` без семантики
@@ -1863,6 +2066,7 @@ npm install markitdown
 
 ```markdown
 <!-- ✅ DO: как параграфы -->
+
 Просто текст в div
 
 Ещё текст
@@ -1883,6 +2087,7 @@ npm install markitdown
 
 ```markdown
 <!-- ✅ DO -->
+
 [Пример](https://example.com)
 ```
 
@@ -1894,7 +2099,8 @@ npm install markitdown
 
 ```markdown
 <!-- ✅ DO -->
-[Пример](https://example.com "Подробнее")
+
+[Пример](https://example.com 'Подробнее')
 ```
 
 ### 13.3. Autolink (текст === href)
@@ -1905,12 +2111,15 @@ npm install markitdown
 
 ```markdown
 <!-- ✅ DO: autolink syntax -->
+
 <https://example.com>
 
 <!-- ✅ ТАКЖЕ ДОПУСТИМО: обычный синтаксис -->
+
 [https://example.com](https://example.com)
 
 <!-- ❌ DON'T: голый URL без форматирования -->
+
 https://example.com
 ```
 
@@ -1922,9 +2131,11 @@ https://example.com
 
 ```markdown
 <!-- ✅ DO: просто текст без ссылки -->
+
 Некуда
 
 <!-- ❌ DON'T: пустая ссылка -->
+
 [Некуда]()
 ```
 
@@ -1936,6 +2147,7 @@ https://example.com
 
 ```markdown
 <!-- ✅ DO: сохранить якорную ссылку -->
+
 [Перейти к секции 2](#section-2)
 ```
 
@@ -1948,21 +2160,23 @@ https://example.com
 
 ```markdown
 <!-- ✅ DO: резолвить если baseUrl передан -->
+
 [О нас](https://example.com/about)
 
 <!-- ✅ DO: оставить как есть если baseUrl не передан -->
+
 [О нас](../about)
 ```
 
 ### 13.7. Email и tel ссылки
 
 ```html
-<a href="mailto:user@example.com">Написать</a>
-<a href="tel:+79001234567">Позвонить</a>
+<a href="mailto:user@example.com">Написать</a> <a href="tel:+79001234567">Позвонить</a>
 ```
 
 ```markdown
 <!-- ✅ DO -->
+
 [Написать](mailto:user@example.com)
 [Позвонить](tel:+79001234567)
 ```
@@ -1976,21 +2190,27 @@ https://example.com
 ### 14.1. Простые сноски
 
 ```html
-<p>Факт<sup><a href="#fn1" id="ref1">[1]</a></sup> в тексте.</p>
+<p>
+  Факт<sup><a href="#fn1" id="ref1">[1]</a></sup> в тексте.
+</p>
 <div class="footnotes">
   <ol>
-    <li id="fn1"><p>Источник информации. <a href="#ref1">↩</a></p></li>
+    <li id="fn1">
+      <p>Источник информации. <a href="#ref1">↩</a></p>
+    </li>
   </ol>
 </div>
 ```
 
 ```markdown
 <!-- ✅ DO: Markdown footnote syntax -->
+
 Факт[^1] в тексте.
 
 [^1]: Источник информации.
 
 <!-- ❌ DON'T: потеря сносок -->
+
 Факт в тексте.
 ```
 
@@ -2031,10 +2251,7 @@ function setDOMAdapter(adapter: DOMAdapterFn): void;
  * Утилита для работы с Selection API (только браузер).
  * Извлекает HTML выделения, нормализует фрагмент, конвертирует.
  */
-function selectionToMarkdown(
-  selection: Selection,
-  options?: MarkItDownOptions
-): string;
+function selectionToMarkdown(selection: Selection, options?: MarkItDownOptions): string;
 ```
 
 ### Примеры использования
@@ -2066,10 +2283,12 @@ const md2 = toMarkdown(complexHtml, {
 
 // Пользовательское правило
 const md3 = toMarkdown(html, {
-  rules: [{
-    filter: (el) => el.tagName === 'MARK',
-    replacement: (el, content) => `==${content}==`,
-  }],
+  rules: [
+    {
+      filter: (el) => el.tagName === 'MARK',
+      replacement: (el, content) => `==${content}==`,
+    },
+  ],
 });
 ```
 
@@ -2096,7 +2315,7 @@ function getAdapter(): DOMAdapterFn {
   // Авто-поиск серверных адаптеров (ленивый import)
   throw new Error(
     '@markitdown/core: No DOM adapter found. ' +
-    'Install linkedom or happy-dom, or call setDOMAdapter().'
+      'Install linkedom or happy-dom, or call setDOMAdapter().',
   );
 }
 ```
@@ -2125,17 +2344,21 @@ const adapter = async () => {
 
 ```typescript
 const REMOVE_TAGS = new Set([
-  'script', 'style', 'noscript', 'iframe', 'object', 'embed',
-  'template', 'svg', // SVG — если не нужен как изображение
+  'script',
+  'style',
+  'noscript',
+  'iframe',
+  'object',
+  'embed',
+  'template',
+  'svg', // SVG — если не нужен как изображение
 ]);
 ```
 
 ### Теги для удаления (по умолчанию, отключаемо)
 
 ```typescript
-const REMOVE_STRUCTURAL = new Set([
-  'nav', 'footer', 'aside', 'header',
-]);
+const REMOVE_STRUCTURAL = new Set(['nav', 'footer', 'aside', 'header']);
 ```
 
 ### Скрытые элементы
@@ -2158,9 +2381,7 @@ function isHidden(el: Element): boolean {
 const UNWRAP_IF_EMPTY = new Set(['div', 'span', 'section', 'article']);
 
 function removeEmptyElements(root: Element): void {
-  const els = root.querySelectorAll(
-    Array.from(UNWRAP_IF_EMPTY).join(',')
-  );
+  const els = root.querySelectorAll(Array.from(UNWRAP_IF_EMPTY).join(','));
   for (const el of els) {
     if (!el.textContent?.trim() && !el.querySelector('img, video, audio, table, pre')) {
       el.remove();
@@ -2243,46 +2464,46 @@ const headingRule: Rule = {
     ".": {
       "browser": {
         "types": "./dist/browser.d.ts",
-        "default": "./dist/browser.mjs"
+        "default": "./dist/browser.mjs",
       },
       "bun": {
         "types": "./dist/server.d.ts",
-        "default": "./dist/server.mjs"
+        "default": "./dist/server.mjs",
       },
       "node": {
         "import": {
           "types": "./dist/server.d.ts",
-          "default": "./dist/server.mjs"
+          "default": "./dist/server.mjs",
         },
         "require": {
           "types": "./dist/server.d.cts",
-          "default": "./dist/server.cjs"
-        }
+          "default": "./dist/server.cjs",
+        },
       },
       "default": {
         "types": "./dist/server.d.ts",
-        "default": "./dist/server.mjs"
-      }
-    }
+        "default": "./dist/server.mjs",
+      },
+    },
   },
   "peerDependencies": {
     "linkedom": ">=0.16",
-    "happy-dom": ">=14"
+    "happy-dom": ">=14",
   },
   "peerDependenciesMeta": {
     "linkedom": { "optional": true },
-    "happy-dom": { "optional": true }
-  }
+    "happy-dom": { "optional": true },
+  },
 }
 ```
 
 ### Разница между entry points
 
-| Entry | DOMParser | Авто-поиск адаптеров | Назначение |
-|-------|-----------|---------------------|------------|
-| `browser.mjs` | Нативный, встроен | Нет | Бандлеры: Vite, esbuild, webpack |
-| `server.mjs` | Нет | Да (linkedom → happy-dom) | Node.js, Bun, SSR |
-| `server.cjs` | Нет | Да | Legacy Node.js (require) |
+| Entry         | DOMParser         | Авто-поиск адаптеров      | Назначение                       |
+| ------------- | ----------------- | ------------------------- | -------------------------------- |
+| `browser.mjs` | Нативный, встроен | Нет                       | Бандлеры: Vite, esbuild, webpack |
+| `server.mjs`  | Нет               | Да (linkedom → happy-dom) | Node.js, Bun, SSR                |
+| `server.cjs`  | Нет               | Да                        | Legacy Node.js (require)         |
 
 ### Сборка: tsup
 
@@ -2366,38 +2587,37 @@ tests/
 
 ### Формат тест-кейса
 
-```typescript
+````typescript
 import { describe, it, expect } from 'vitest';
 import { toMarkdown } from '../src/index.js';
 
 describe('whitespace', () => {
   it('collapses multiple spaces in regular text', () => {
-    expect(toMarkdown('<p>hello    world</p>'))
-      .toBe('hello world\n');
+    expect(toMarkdown('<p>hello    world</p>')).toBe('hello world\n');
   });
 
   it('preserves whitespace in <pre>', () => {
-    expect(toMarkdown('<pre><code>  two spaces\n    four</code></pre>'))
-      .toBe('```\n  two spaces\n    four\n```\n');
+    expect(toMarkdown('<pre><code>  two spaces\n    four</code></pre>')).toBe(
+      '```\n  two spaces\n    four\n```\n',
+    );
   });
 
   it('moves flanking whitespace outside emphasis', () => {
-    expect(toMarkdown('<p><em> hello </em></p>'))
-      .toBe(' *hello* \n');
+    expect(toMarkdown('<p><em> hello </em></p>')).toBe(' *hello* \n');
   });
 });
-```
+````
 
 ### Целевые метрики
 
-| Метрика | Цель |
-|---------|------|
-| Размер browser entry (gzip) | < 15 KB |
-| Размер server entry (gzip, без DOM-адаптера) | < 20 KB |
-| Время конвертации (браузер, 10 KB HTML) | < 50 мс |
-| Время конвертации (Bun + linkedom, 10 KB HTML) | < 30 мс |
-| Покрытие тестами | > 90% |
-| Тесты проходят в Node.js 20+ | ✓ |
-| Тесты проходят в Bun latest | ✓ |
-| Тесты проходят в браузере (Vitest browser mode) | ✓ |
-| Zero hard dependencies | ✓ |
+| Метрика                                         | Цель    |
+| ----------------------------------------------- | ------- |
+| Размер browser entry (gzip)                     | < 15 KB |
+| Размер server entry (gzip, без DOM-адаптера)    | < 20 KB |
+| Время конвертации (браузер, 10 KB HTML)         | < 50 мс |
+| Время конвертации (Bun + linkedom, 10 KB HTML)  | < 30 мс |
+| Покрытие тестами                                | > 90%   |
+| Тесты проходят в Node.js 20+                    | ✓       |
+| Тесты проходят в Bun latest                     | ✓       |
+| Тесты проходят в браузере (Vitest browser mode) | ✓       |
+| Zero hard dependencies                          | ✓       |
