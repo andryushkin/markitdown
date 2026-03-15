@@ -102,6 +102,7 @@ interface MarkItDownOptions {
   complexTableFallback?: 'html' | 'text' | 'skip'; // default: 'html'
   rules?: Rule[];
   domAdapter?: DOMAdapterFn;
+  headingOffset?: number; // Phase 8: сдвиг уровней для selectionToMarkdown
 }
 ```
 
@@ -120,11 +121,25 @@ tests/
 ## Known Issues / Gotchas
 
 ### `Node` глобал не определён в Bun
+
 `Node.TEXT_NODE`, `Node.ELEMENT_NODE` и т.д. — браузерные глобалы. В Bun выбрасывают `ReferenceError`.
 **Решение:** использовать числовые константы: `TEXT_NODE = 3`, `ELEMENT_NODE = 1`, `DOCUMENT_NODE = 9`.
 
 ### `linkedom` нужен и в `peerDependencies`, и в `devDependencies`
+
 `peerDependencies` не устанавливаются автоматически — для тестов linkedom должен быть явно в `devDependencies`.
+
+### `for...of NodeListOf<T>` не компилируется без `lib: dom`
+
+TypeScript без `"lib": ["dom"]` считает `NodeListOf<T>` не итерируемым. **Решение:** всегда `Array.from(nodeList)`.
+
+### heading rule: не использовать `_childContent`, обходить `childNodes` вручную
+
+Для фильтрации anchor-ссылок (`<a class="anchor/heading-link">`) heading rule игнорирует переданный `childContent` и сам вызывает `convert()` на каждом child, пропуская anchor-элементы.
+
+### `<br>` → `\\\n`, не `  \n`
+
+Нормализатор делает `.replace(/[ \t]+$/gm, '')` — два пробела из `  \n` будут стёрты. Используем `\\\n` (CommonMark hard line break).
 
 ## Performance Targets
 

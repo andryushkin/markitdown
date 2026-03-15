@@ -40,12 +40,12 @@
 
 ---
 
-## Phase 2: Block Elements
+## Phase 2: Block Elements ✅
 
-- [ ] Headings (`<h1>`–`<h6>` → ATX `#`)
-- [ ] Paragraphs (`<p>`) и Breaks (`<br>`)
-- [ ] Blockquotes (`<blockquote>` → `>`)
-- [ ] **Tests:** `tests/headings.test.ts`, `tests/paragraphs.test.ts`, `tests/blockquote.test.ts`
+- [x] Headings (`<h1>`–`<h6>` → ATX `#`), `headingOffset` option, anchor stripping
+- [x] Paragraphs (`<p>`), Breaks (`<br>` → `\\\n`), HR (`<hr>` → `---`), Div
+- [x] Blockquotes (`<blockquote>` → `>`), nested blockquotes
+- [x] **Tests:** `tests/headings.test.ts`, `tests/paragraphs.test.ts`, `tests/blockquote.test.ts`
 
 ---
 

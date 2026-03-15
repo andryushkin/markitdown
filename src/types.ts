@@ -12,4 +12,5 @@ export interface MarkItDownOptions {
   complexTableFallback?: 'html' | 'text' | 'skip';
   rules?: Rule[];
   domAdapter?: DOMAdapterFn;
+  headingOffset?: number; // Phase 8: сдвиг уровней заголовков для selectionToMarkdown
 }

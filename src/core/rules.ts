@@ -1,7 +1,8 @@
 import type { Rule, MarkItDownOptions } from '../types.js';
+import { BLOCK_RULES } from '../rules/block.js';
 
-// Стандартные правила — заполнятся в Phase 2–7
-export const STANDARD_RULES: Rule[] = [];
+// Стандартные правила
+export const STANDARD_RULES: Rule[] = [...BLOCK_RULES];
 
 // 4. Keep-rules (HTML as-is) — заполнятся по необходимости
 export const KEEP_RULES: Rule[] = [];
