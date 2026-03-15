@@ -1,24 +1,33 @@
-const REMOVE_TAGS = new Set([
-  'script',
-  'style',
-  'noscript',
-  'iframe',
-  'object',
-  'embed',
-  'template',
-  'svg',
-]);
+const REMOVE_TAGS = new Set(['style', 'noscript', 'iframe', 'object', 'embed', 'template', 'svg']);
 const REMOVE_STRUCTURAL = new Set(['nav', 'footer', 'aside', 'header']);
 const UNWRAP_IF_EMPTY = new Set(['div', 'span', 'section', 'article']);
 const PRESERVE_WS = new Set(['pre', 'code', 'textarea', 'kbd', 'samp']);
 
-export function sanitize(root: Element | Document, mode: 'full' | 'selection' = 'full'): void {
+export function sanitize(
+  root: Element | Document,
+  mode: 'full' | 'selection' = 'full',
+  math = false,
+): void {
   hoistNoscriptImageSrc(root);
   removeByTagSet(root, REMOVE_TAGS);
+  removeScripts(root, math);
   if (mode === 'full') removeByTagSet(root, REMOVE_STRUCTURAL);
   removeHidden(root);
   removeEmptyWrappers(root);
   collapseWhitespace(root);
+}
+
+function removeScripts(root: Element | Document, preserveMath: boolean): void {
+  const toRemove: Element[] = [];
+  const walker = createWalker(root);
+  let node: Node | null;
+  while ((node = walker.nextNode())) {
+    const el = node as Element;
+    if (el.tagName.toLowerCase() !== 'script') continue;
+    if (preserveMath && (el.getAttribute('type') ?? '').startsWith('math/tex')) continue;
+    toRemove.push(el);
+  }
+  for (const el of toRemove) el.parentNode?.removeChild(el);
 }
 
 // Перед удалением <noscript>: если рядом с placeholder-img есть <noscript> с реальным src,

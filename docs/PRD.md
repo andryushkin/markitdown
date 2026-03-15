@@ -119,12 +119,13 @@
 
 ---
 
-## Phase 10: Math (после v1.0)
+## Phase 10: Math (после v1.0) ✅
 
-- [ ] KaTeX extraction
-- [ ] MathJax v2/v3
-- [ ] Wikipedia формулы
-- [ ] **Tests:** `tests/math.test.ts`
+- [x] KaTeX extraction (inline + display)
+- [x] MathJax v2 (`<script type="math/tex">`) + v3 (`mjx-container`)
+- [x] Wikipedia формулы (`<math alttext="...">`)
+- [x] Sanitizer: защита `<script type="math/tex">` при `math=true`
+- [x] **Tests:** `tests/math.test.ts` (7 кейсов)
 
 ---
 

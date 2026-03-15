@@ -4,6 +4,7 @@ import { LIST_RULES } from '../rules/lists.js';
 import { TABLE_RULES } from '../rules/tables.js';
 import { CODE_RULES } from '../rules/code.js';
 import { INLINE_RULES } from '../rules/inline.js';
+import { MATH_RULES } from '../rules/math.js';
 
 // Стандартные правила
 export const STANDARD_RULES: Rule[] = [
@@ -38,7 +39,12 @@ export function findRule(el: Element, options: MarkItDownOptions): Rule {
   for (const rule of options.rules ?? []) {
     if (matches(el, rule.filter)) return rule;
   }
-  // Priority 2: special rules (math/footnotes) — Phase 10/11
+  // Priority 2: special rules — math
+  if (options.math) {
+    for (const rule of MATH_RULES) {
+      if (matches(el, rule.filter)) return rule;
+    }
+  }
   // Priority 3: standard rules
   for (const rule of STANDARD_RULES) {
     if (matches(el, rule.filter)) return rule;

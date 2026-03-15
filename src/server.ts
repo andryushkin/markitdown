@@ -14,7 +14,7 @@ export function toMarkdown(input: string | Node, options: MarkItDownOptions = {}
   } else {
     root = input as Element;
   }
-  sanitize(root);
+  sanitize(root, 'full', options.math);
   const raw = convertChildren(root as Element, options);
   return normalize(raw);
 }

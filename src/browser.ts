@@ -15,7 +15,7 @@ export function toMarkdown(input: string | Node, options: MarkItDownOptions = {}
   } else {
     root = input as Element;
   }
-  sanitize(root);
+  sanitize(root, 'full', options.math);
   const raw = convertChildren(root as Element, options);
   return normalize(raw);
 }
@@ -29,7 +29,7 @@ export function selectionToMarkdown(selection: Selection, options: MarkItDownOpt
   }
 
   normalizeFragment(container);
-  sanitize(container, 'selection');
+  sanitize(container, 'selection', options.math);
   const raw = convertChildren(container, options);
   return normalize(raw);
 }
