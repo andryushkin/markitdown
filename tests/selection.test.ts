@@ -195,3 +195,50 @@ describe('selectionToMarkdown pipeline (через toMarkdown + normalizeFragmen
     expect(result).toBe('_курсив_ и `код`\n');
   });
 });
+
+// ──────────────────────────────────────────────────────────────────────────────
+// table selection enrichment (через selectionPipeline)
+// ──────────────────────────────────────────────────────────────────────────────
+
+describe('table selection enrichment (через selectionPipeline)', () => {
+  function selectionPipeline(innerHTML: string, options = {}): string {
+    const container = makeContainer(innerHTML);
+    normalizeFragment(container);
+    return toMarkdown(container as unknown as Node, options);
+  }
+
+  it('строки таблицы с шапкой → markdown-таблица', () => {
+    const result = selectionPipeline(
+      '<table><thead><tr><th>Name</th><th>Value</th></tr></thead><tbody><tr><td>foo</td><td>42</td></tr></tbody></table>',
+    );
+    expect(result).toContain('| Name');
+    expect(result).toContain('| foo');
+    expect(result).toContain('---');
+  });
+
+  it('две строки tbody с шапкой → полная таблица', () => {
+    const result = selectionPipeline(
+      '<table><thead><tr><th>A</th><th>B</th></tr></thead><tbody><tr><td>1</td><td>2</td></tr><tr><td>3</td><td>4</td></tr></tbody></table>',
+    );
+    expect(result).toContain('| A');
+    expect(result).toContain('| 1');
+    expect(result).toContain('| 3');
+  });
+
+  it('таблица без thead → таблица без шапки (строки данных)', () => {
+    const result = selectionPipeline(
+      '<table><tbody><tr><td>X</td><td>Y</td></tr><tr><td>1</td><td>2</td></tr></tbody></table>',
+    );
+    expect(result).toContain('| X');
+    expect(result).toContain('| 1');
+  });
+
+  it('таблица с одной строкой данных и шапкой → не схлопывается в текст', () => {
+    const result = selectionPipeline(
+      '<table><thead><tr><th>Col1</th><th>Col2</th></tr></thead><tbody><tr><td>val1</td><td>val2</td></tr></tbody></table>',
+    );
+    expect(result).toContain('| Col1');
+    expect(result).toContain('| val1');
+    expect(result).toContain('---');
+  });
+});
