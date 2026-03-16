@@ -29,11 +29,11 @@ export function toMarkdown(input: string | Node, options: MarkItDownOptions = {}
   return result;
 }
 
-/** Находит ближайший <table> в живом DOM, поднимаясь вверх от node */
-function findAncestorTable(node: Node): Element | null {
+/** Универсальный поиск предка по tagName (поднимается вверх от node) */
+function findAncestorElement(node: Node, tagName: string): Element | null {
   let current: Node | null = node.nodeType === 1 ? node : (node as Text).parentElement;
   while (current) {
-    if ((current as Element).tagName?.toLowerCase() === 'table') return current as Element;
+    if ((current as Element).tagName?.toLowerCase() === tagName) return current as Element;
     current = (current as Element).parentElement ?? null;
   }
   return null;
@@ -114,7 +114,7 @@ function buildTableFragment(
  * Если range не в таблице — возвращает null (использовать cloneContents()).
  */
 function tryEnrichTableFragment(range: Range): DocumentFragment | null {
-  const ancestorTable = findAncestorTable(range.commonAncestorContainer);
+  const ancestorTable = findAncestorElement(range.commonAncestorContainer, 'table');
   if (!ancestorTable) return null;
 
   const rawFragment = range.cloneContents();
@@ -143,13 +143,163 @@ function tryEnrichTableFragment(range: Range): DocumentFragment | null {
   return buildTableFragment(null, selectedRows, doc);
 }
 
+// ──────────────────────────────────────────────────────────────────────────────
+// Расширение выделения и семантическое обогащение фрагментов
+// ──────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Создаёт копию range, расширяя start/end до ближайших границ слов.
+ * Не модифицирует оригинальный Range/Selection пользователя.
+ */
+function expandRangeToWordBoundaries(range: Range): Range {
+  const expanded = range.cloneRange();
+
+  // Expand start backward
+  const startNode = range.startContainer;
+  if (startNode.nodeType === 3 /* TEXT_NODE */) {
+    const text = startNode.textContent ?? '';
+    let start = range.startOffset;
+    while (start > 0 && /[\p{L}\p{N}]/u.test(text[start - 1]!)) start--;
+    if (start !== range.startOffset) expanded.setStart(startNode, start);
+  }
+
+  // Expand end forward
+  const endNode = range.endContainer;
+  if (endNode.nodeType === 3 /* TEXT_NODE */) {
+    const text = endNode.textContent ?? '';
+    let end = range.endOffset;
+    while (end < text.length && /[\p{L}\p{N}]/u.test(text[end]!)) end++;
+    if (end !== range.endOffset) expanded.setEnd(endNode, end);
+  }
+
+  return expanded;
+}
+
+const SEMANTIC_TAGS = new Set([
+  'pre', 'blockquote',
+  'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+  'li',
+  'td', 'th', 'tr', 'tbody', 'thead', 'tfoot', 'table',
+]);
+
+/** Возвращает ближайший семантический предок из SEMANTIC_TAGS */
+function findNearestSemanticAncestor(node: Node): Element | null {
+  let current: Node | null = node.nodeType === 1 ? node : (node as Text).parentElement;
+  while (current) {
+    const tag = (current as Element).tagName?.toLowerCase();
+    if (tag && SEMANTIC_TAGS.has(tag)) return current as Element;
+    current = (current as Element).parentElement ?? null;
+  }
+  return null;
+}
+
+function buildPreFragment(range: Range, ancestorPre: Element): DocumentFragment | null {
+  const rawFragment = range.cloneContents();
+  const selectedText = rawFragment.textContent ?? '';
+  if (!selectedText.trim()) return null;
+
+  const doc = ancestorPre.ownerDocument!;
+  const codeEl = ancestorPre.querySelector('code');
+  const pre = doc.createElement('pre');
+  const code = doc.createElement('code');
+
+  // Копируем атрибуты языка для detectLang()
+  if (codeEl) {
+    const dl = codeEl.getAttribute('data-lang');
+    if (dl) code.setAttribute('data-lang', dl);
+    const dLang = codeEl.getAttribute('data-language');
+    if (dLang) code.setAttribute('data-language', dLang);
+    const cls = codeEl.getAttribute('class');
+    if (cls) code.setAttribute('class', cls);
+  }
+  const preCls = ancestorPre.getAttribute('class');
+  if (preCls) pre.setAttribute('class', preCls);
+
+  code.textContent = selectedText;
+  pre.appendChild(code);
+
+  const frag = doc.createDocumentFragment();
+  frag.appendChild(pre);
+  return frag;
+}
+
+function buildBlockquoteFragment(range: Range, ancestorBq: Element): DocumentFragment | null {
+  const rawFragment = range.cloneContents();
+  if (!(rawFragment.textContent ?? '').trim()) return null;
+
+  const doc = ancestorBq.ownerDocument!;
+  const bq = doc.createElement('blockquote');
+  bq.appendChild(rawFragment);
+
+  const frag = doc.createDocumentFragment();
+  frag.appendChild(bq);
+  return frag;
+}
+
+function buildHeadingFragment(range: Range, ancestorH: Element): DocumentFragment | null {
+  const rawFragment = range.cloneContents();
+  if (!(rawFragment.textContent ?? '').trim()) return null;
+
+  const doc = ancestorH.ownerDocument!;
+  const heading = doc.createElement(ancestorH.tagName.toLowerCase());
+  heading.appendChild(rawFragment);
+
+  const frag = doc.createDocumentFragment();
+  frag.appendChild(heading);
+  return frag;
+}
+
+function buildListItemFragment(range: Range, ancestorLi: Element): DocumentFragment | null {
+  const rawFragment = range.cloneContents();
+  if (!(rawFragment.textContent ?? '').trim()) return null;
+
+  const doc = ancestorLi.ownerDocument!;
+  const li = doc.createElement('li');
+  li.appendChild(rawFragment);
+
+  // Оборачиваем в ul/ol для корректной работы list-item rule (определяет - vs 1.)
+  const parentList = ancestorLi.closest('ul, ol');
+  const listTag = parentList?.tagName.toLowerCase() ?? 'ul';
+  const list = doc.createElement(listTag);
+  // Копируем start-атрибут для нумерованных списков
+  const start = parentList?.getAttribute('start');
+  if (start) list.setAttribute('start', start);
+  list.appendChild(li);
+
+  const frag = doc.createDocumentFragment();
+  frag.appendChild(list);
+  return frag;
+}
+
+const TABLE_TAGS = new Set(['td', 'th', 'tr', 'tbody', 'thead', 'tfoot', 'table']);
+const HEADING_TAGS = new Set(['h1', 'h2', 'h3', 'h4', 'h5', 'h6']);
+
+/**
+ * Обобщённый диспетчер: определяет семантический контекст range
+ * и возвращает обогащённый фрагмент, или null если контекст неизвестен.
+ */
+function tryEnrichFragment(range: Range): DocumentFragment | null {
+  const ancestor = findNearestSemanticAncestor(range.commonAncestorContainer);
+  if (!ancestor) return null;
+
+  const tag = ancestor.tagName.toLowerCase();
+
+  if (tag === 'pre') return buildPreFragment(range, ancestor);
+  if (HEADING_TAGS.has(tag)) return buildHeadingFragment(range, ancestor);
+  if (tag === 'li') return buildListItemFragment(range, ancestor);
+  if (TABLE_TAGS.has(tag)) return tryEnrichTableFragment(range);
+  if (tag === 'blockquote') return buildBlockquoteFragment(range, ancestor);
+
+  return null;
+}
+
 export function selectionToMarkdown(selection: Selection, options: MarkItDownOptions = {}): string {
   if (!selection || selection.rangeCount === 0 || selection.toString().trim() === '') return '';
 
   const container = document.createElement('div');
   for (let i = 0; i < selection.rangeCount; i++) {
-    const range = selection.getRangeAt(i);
-    const fragment = tryEnrichTableFragment(range) ?? range.cloneContents();
+    const range = expandRangeToWordBoundaries(selection.getRangeAt(i));
+    const fragment = tryEnrichFragment(range) ?? range.cloneContents();
     container.appendChild(fragment);
   }
 

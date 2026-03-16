@@ -242,3 +242,102 @@ describe('table selection enrichment (через selectionPipeline)', () => {
     expect(result).toContain('---');
   });
 });
+
+// ──────────────────────────────────────────────────────────────────────────────
+// Enrichment: pre/code partial selection
+// ──────────────────────────────────────────────────────────────────────────────
+
+describe('enrichment: pre/code partial selection', () => {
+  function selectionPipeline(innerHTML: string, options = {}): string {
+    const container = makeContainer(innerHTML);
+    normalizeFragment(container);
+    return toMarkdown(container as unknown as Node, options);
+  }
+
+  it('текст внутри <pre><code> → code fence', () => {
+    const result = selectionPipeline('<pre><code>const x = 1;</code></pre>');
+    expect(result).toContain('```');
+    expect(result).toContain('const x = 1;');
+  });
+
+  it('язык из class language-js → указывается в fence', () => {
+    const result = selectionPipeline('<pre><code class="language-js">const x = 1;</code></pre>');
+    expect(result).toContain('```js');
+    expect(result).toContain('const x = 1;');
+  });
+
+  it('язык из data-lang → указывается в fence', () => {
+    const result = selectionPipeline('<pre><code data-lang="python">x = 1</code></pre>');
+    expect(result).toContain('```python');
+    expect(result).toContain('x = 1');
+  });
+});
+
+// ──────────────────────────────────────────────────────────────────────────────
+// Enrichment: blockquote partial selection
+// ──────────────────────────────────────────────────────────────────────────────
+
+describe('enrichment: blockquote partial selection', () => {
+  function selectionPipeline(innerHTML: string, options = {}): string {
+    const container = makeContainer(innerHTML);
+    normalizeFragment(container);
+    return toMarkdown(container as unknown as Node, options);
+  }
+
+  it('текст внутри <blockquote> → blockquote prefix', () => {
+    const result = selectionPipeline('<blockquote><p>Цитата</p></blockquote>');
+    expect(result).toContain('> Цитата');
+  });
+
+  it('multi-paragraph blockquote → все строки с префиксом', () => {
+    const result = selectionPipeline(
+      '<blockquote><p>Первая строка</p><p>Вторая строка</p></blockquote>',
+    );
+    const lines = result.split('\n').filter((l) => l.trim());
+    expect(lines.every((l) => l.startsWith('>'))).toBe(true);
+  });
+});
+
+// ──────────────────────────────────────────────────────────────────────────────
+// Enrichment: heading partial selection
+// ──────────────────────────────────────────────────────────────────────────────
+
+describe('enrichment: heading partial selection', () => {
+  function selectionPipeline(innerHTML: string, options = {}): string {
+    const container = makeContainer(innerHTML);
+    normalizeFragment(container);
+    return toMarkdown(container as unknown as Node, options);
+  }
+
+  it('текст внутри <h2> → ## heading', () => {
+    const result = selectionPipeline('<h2>Заголовок второго уровня</h2>');
+    expect(result).toBe('## Заголовок второго уровня\n');
+  });
+
+  it('текст внутри <h3> → ### heading', () => {
+    const result = selectionPipeline('<h3>Заголовок третьего</h3>');
+    expect(result).toBe('### Заголовок третьего\n');
+  });
+});
+
+// ──────────────────────────────────────────────────────────────────────────────
+// Enrichment: list item partial selection
+// ──────────────────────────────────────────────────────────────────────────────
+
+describe('enrichment: list item partial selection', () => {
+  function selectionPipeline(innerHTML: string, options = {}): string {
+    const container = makeContainer(innerHTML);
+    normalizeFragment(container);
+    return toMarkdown(container as unknown as Node, options);
+  }
+
+  it('текст внутри <li> в <ul> → "- item"', () => {
+    const result = selectionPipeline('<ul><li>Пункт списка</li></ul>');
+    expect(result).toBe('- Пункт списка\n');
+  });
+
+  it('текст внутри <li> в <ol> → "1. item"', () => {
+    const result = selectionPipeline('<ol><li>Нумерованный пункт</li></ol>');
+    expect(result).toMatch(/^1\. Нумерованный пункт\n$/);
+  });
+});
