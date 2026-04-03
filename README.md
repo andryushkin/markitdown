@@ -1,4 +1,4 @@
-# @markitdown/core
+# HTML → .md
 
 [![npm version](https://img.shields.io/npm/v/@markitdown/core)](https://www.npmjs.com/package/@markitdown/core)
 [![license](https://img.shields.io/npm/l/@markitdown/core)](./LICENSE)
