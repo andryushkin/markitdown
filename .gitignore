@@ -1,5 +1,7 @@
 node_modules/
-dist/
+dist/*
+!dist/browser.mjs
+!dist/browser.d.ts
 .DS_Store
 *.zip
 .claude/
