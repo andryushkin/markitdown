@@ -137,6 +137,22 @@ describe('links', () => {
       toMarkdown('<a href="https://other.com">Other</a>', { baseUrl: 'https://example.com' }),
     ).toBe('[Other](https://other.com)\n');
   });
+
+  it('javascript: href блокируется — ссылка теряет URL', () => {
+    expect(toMarkdown('<a href="javascript:alert(1)">click</a>')).toBe('click\n');
+  });
+
+  it('JAVASCRIPT: (верхний регистр) тоже блокируется', () => {
+    expect(toMarkdown('<a href="JAVASCRIPT:alert(1)">click</a>')).toBe('click\n');
+  });
+
+  it('javascript: с ведущими пробелами блокируется', () => {
+    expect(toMarkdown('<a href="  javascript:alert(1)">click</a>')).toBe('click\n');
+  });
+
+  it('vbscript: href блокируется', () => {
+    expect(toMarkdown('<a href="vbscript:MsgBox(1)">click</a>')).toBe('click\n');
+  });
 });
 
 describe('images', () => {
@@ -166,6 +182,10 @@ describe('images', () => {
 
   it('alt с переносами строк — нормализуется в пробел', () => {
     expect(toMarkdown('<img src="x.jpg" alt="line1\nline2">')).toBe('![line1 line2](x.jpg)\n');
+  });
+
+  it('javascript: src блокируется — возвращает только alt', () => {
+    expect(toMarkdown('<img src="javascript:alert(1)" alt="img">')).toBe('img\n');
   });
 });
 

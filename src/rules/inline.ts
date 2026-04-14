@@ -7,7 +7,10 @@ function wrap(content: string, before: string, after: string): string {
   return `${leading}${before}${trimmed}${after}${trailing}`;
 }
 
+const UNSAFE_URL_PATTERN = /^\s*(javascript|vbscript|data\s*:.*text\/html)/i;
+
 function resolveUrl(url: string, baseUrl?: string): string {
+  if (UNSAFE_URL_PATTERN.test(url)) return '';
   if (!baseUrl || url.startsWith('http') || url.startsWith('//') || url.startsWith('data:')) {
     return url;
   }
