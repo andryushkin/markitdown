@@ -122,6 +122,7 @@ export const INLINE_RULES: Rule[] = [
     filter: (el) => el.tagName.toLowerCase() === 'a' && el.hasAttribute('href'),
     replacement: (el, childContent, options: MarkItDownOptions) => {
       const href = resolveUrl(el.getAttribute('href') ?? '', options.baseUrl);
+      if (!href) return childContent;
       const { leading, trimmed, trailing } = extractFlankingWhitespace(childContent);
       if (!trimmed) return childContent;
       return `${leading}[${trimmed}](${href})${trailing}`;
